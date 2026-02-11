@@ -16,7 +16,7 @@ export default function ModernNavbar() {
                     <div className="flex items-center">
                         <Link href="/">
                             <div className="flex items-center cursor-pointer transition-opacity duration-200 hover:opacity-80">
-                                <CetraLogo size={28} />
+                                <CetraLogo size={28} color="#2563EB" />
                             </div>
                         </Link>
                     </div>

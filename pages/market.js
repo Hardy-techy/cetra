@@ -233,7 +233,7 @@ export default function Market() {
                                     <tr className="text-left border-b border-[#2C2C2E]">
                                         <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[30%]">Asset</th>
                                         <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[20%]">Total Supplied</th>
-                                        <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">Supply APY</th>
+                                        <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">Supply Rate</th>
                                         <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[20%]">Total Borrowed</th>
                                         <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">Borrow APY</th>
                                     </tr>
@@ -259,7 +259,7 @@ export default function Market() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-green-400 font-bold text-base">{(parseFloat(token.borrowAPYRate || 0) * 100).toFixed(2)}%</div>
+                                                <div className="text-green-400 font-bold text-base">{(parseFloat(token.supplyAPYRate || 0) * 100).toFixed(2)}%</div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div>
@@ -289,5 +289,5 @@ export default function Market() {
 
 // Force server-side rendering to prevent build timeout
 export async function getServerSideProps() {
-  return { props: {} };
+    return { props: {} };
 }

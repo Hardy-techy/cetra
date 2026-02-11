@@ -97,7 +97,7 @@ export default function BorrowModal({ token, onClose, onBorrow, onRefresh, txRes
               {/* Borrow Stats */}
               <div className="bg-white/[0.03] rounded-xl p-4 mb-6 space-y-3 border border-white/[0.05]">
                 <div className="flex justify-between text-sm items-center">
-                  <span className="text-gray-400">Borrow APY</span>
+                  <span className="text-gray-400">Fixed Fee</span>
                   <span className="text-rose-400 font-semibold bg-rose-400/10 px-2 py-0.5 rounded text-xs">
                     {(parseFloat(token.borrowAPYRate || 0) * 100).toFixed(2)}%
                   </span>

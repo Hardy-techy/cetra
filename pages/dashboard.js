@@ -156,6 +156,8 @@ export default function Markets() {
               });
             }
           }
+          // Note: kept sequential for detailedSupplies for now to avoid complexity with contract calls, 
+          // but could be parallelized if needed. The lists are usually short.
           setYourSupplies(detailedSupplies);
         } else { setYourSupplies([]); }
       } catch (e) { console.error("Supply refresh failed", e); }
@@ -185,14 +187,12 @@ export default function Markets() {
 
     // Helper: refresh assets using PROXY
     const refreshSupplyAssets = async () => {
-      const updated = [];
-      for (const token of tokenList) { updated.push(await normalizeToken(token)); }
+      const updated = await Promise.all(tokenList.map(async (token) => await normalizeToken(token)));
       setSupplyAssets(updated);
     };
 
     const refreshBorrowAssets = async () => {
-      const updated = [];
-      for (const token of tokenList) { updated.push(await normalizeToken(token)); }
+      const updated = await Promise.all(tokenList.map(async (token) => await normalizeToken(token)));
       setBorrowAssets(updated);
     };
 
@@ -786,7 +786,7 @@ export default function Markets() {
 
   // Calculate Net APY (simplified - you can enhance this with weighted average)
   const avgSupplyAPY = yourSupplies.data?.yourSupplies?.length > 0
-    ? yourSupplies.data.yourSupplies.reduce((acc, t) => acc + parseFloat(t.borrowAPYRate || 0), 0) / yourSupplies.data.yourSupplies.length
+    ? yourSupplies.data.yourSupplies.reduce((acc, t) => acc + parseFloat(t.supplyAPYRate || 0), 0) / yourSupplies.data.yourSupplies.length
     : 0;
 
   const avgBorrowAPY = yourBorrows.data?.yourBorrows?.length > 0
@@ -844,7 +844,7 @@ export default function Markets() {
             </div>
             <div>
               <div className="flex items-center gap-1 mb-1">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Net APY</div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Net Fee</div>
                 <div className="w-3.5 h-3.5 rounded-full border border-gray-600 flex items-center justify-center text-[10px] text-gray-500 cursor-help">i</div>
               </div>
               <div className="text-3xl font-bold text-white tracking-tight">0.00%</div>
@@ -898,8 +898,8 @@ export default function Markets() {
                         <div className="text-xl font-bold text-white tracking-tight">${totalSupplied.toFixed(2)}</div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium text-gray-400 mb-1">APY</div>
-                        <div className="text-xl font-bold text-green-400 tracking-tight">0.00%</div>
+                        <div className="text-xs font-medium text-gray-400 mb-1">Rate</div>
+                        <div className="text-xl font-bold text-green-400 tracking-tight">{(avgSupplyAPY * 100).toFixed(2)}%</div>
                       </div>
                       <div>
                         <div className="text-xs font-medium text-gray-400 mb-1">Collateral</div>
@@ -927,7 +927,7 @@ export default function Markets() {
                             <tr className="text-left border-b border-[#2C2C2E]">
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[30%]">Asset</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[25%]">Balance</th>
-                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">APY</th>
+                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">Rate</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[30%] text-right">Actions</th>
                             </tr>
                           </thead>
@@ -952,7 +952,7 @@ export default function Markets() {
                                   </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <div className="text-green-400 font-bold text-base">0.00%</div>
+                                  <div className="text-green-400 font-bold text-base">{(parseFloat(token.supplyAPYRate || 0) * 100).toFixed(2)}%</div>
                                 </td>
                                 <td className="px-6 py-4">
                                   <div className="flex gap-2 justify-end">
@@ -1014,7 +1014,7 @@ export default function Markets() {
                             <tr className="text-left border-b border-[#2C2C2E]">
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[20%]">Asset</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[20%]">Wallet Balance</th>
-                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[12%]">APY</th>
+                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[12%]">Rate</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[13%] text-center">Collateral</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[25%] text-right"></th>
                             </tr>
@@ -1040,7 +1040,7 @@ export default function Markets() {
                                   </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <div className="text-green-400 font-bold text-base">0.00%</div>
+                                  <div className="text-green-400 font-bold text-base">{(parseFloat(token.supplyAPYRate || 0) * 100).toFixed(2)}%</div>
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                   <span className="text-green-500 font-bold text-lg">✓</span>
@@ -1087,8 +1087,8 @@ export default function Markets() {
                         <div className="text-xl font-bold text-white tracking-tight">${totalBorrowed.toFixed(2)}</div>
                       </div>
                       <div>
-                        <div className="text-xs font-medium text-gray-400 mb-1">APY</div>
-                        <div className="text-xl font-bold text-red-400 tracking-tight">0.00%</div>
+                        <div className="text-xs font-medium text-gray-400 mb-1">Fixed Fee</div>
+                        <div className="text-xl font-bold text-red-400 tracking-tight">{(avgBorrowAPY * 100).toFixed(2)}%</div>
                       </div>
                       <div>
                         <div className="text-xs font-medium text-gray-400 mb-1">Available</div>
@@ -1116,7 +1116,7 @@ export default function Markets() {
                             <tr className="text-left border-b border-[#2C2C2E]">
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[25%]">Asset</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[20%]">Debt</th>
-                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[12%]">APY</th>
+                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[12%]">Fixed Fee</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[13%]">APY Type</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[30%] text-right">Actions</th>
                             </tr>
@@ -1142,10 +1142,10 @@ export default function Markets() {
                                   </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <div className="text-red-400 font-bold text-base">0.00%</div>
+                                  <div className="text-red-400 font-bold text-base">{(parseFloat(token.borrowAPYRate || 0) * 100).toFixed(2)}%</div>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <span className="text-gray-400 text-sm font-medium bg-[#2C2C2E] px-2 py-1 rounded">Variable</span>
+                                  <span className="text-gray-400 text-sm font-medium bg-[#2C2C2E] px-2 py-1 rounded">Fixed</span>
                                 </td>
                                 <td className="px-6 py-4">
                                   <div className="flex gap-2 justify-end">
@@ -1209,7 +1209,7 @@ export default function Markets() {
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[25%]">
                                 Available
                               </th>
-                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">APY</th>
+                              <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[15%]">Fixed Fee</th>
                               <th className="px-6 py-4 text-gray-400 text-xs font-semibold uppercase tracking-wider w-[32%] text-right"></th>
                             </tr>
                           </thead>
@@ -1248,7 +1248,7 @@ export default function Markets() {
                                     </div>
                                   </td>
                                   <td className="px-6 py-4">
-                                    <div className="text-red-400 font-bold text-base">0.00%</div>
+                                    <div className="text-red-400 font-bold text-base">{(parseFloat(token.borrowAPYRate || 0) * 100).toFixed(2)}%</div>
                                   </td>
                                   <td className="px-6 py-4">
                                     <div className="flex justify-end">

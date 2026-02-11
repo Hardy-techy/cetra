@@ -177,7 +177,20 @@ export const normalizeToken = async (web3, contract, currentToken, connectedAcco
       inDollars: web3.utils.fromWei(userTokenLentAmountInDollars), // Dollars are always 18 decimals
     },
     LTV: web3.utils.fromWei(currentToken.LTV),
-    borrowAPYRate: web3.utils.fromWei(currentToken.stableRate),
+    borrowAPYRate: "0.1", // Fixed 10% APY as requested (Contract is intended to be 10%)
+    supplyAPYRate: (() => {
+      try {
+        if (!currentToken || !currentToken.name) return "0.00";
+        const s = currentToken.name.toUpperCase();
+        if (s.includes('PC') || s.includes('PUSH')) return "0.06"; // 6%
+        if (s.includes('WETH')) return "0.0125"; // 1.25%
+        if (s.includes('CET')) return "0.066"; // 6.6%
+        if (s.includes('USDC')) return "0.05"; // 5%
+        return "0.00";
+      } catch (e) {
+        return "0.00";
+      }
+    })(),
     utilizationRate: utilizationRate,
     oneTokenToDollar,
     decimals
