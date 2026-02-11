@@ -2,18 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
-  target: 'server',
   eslint: {
     ignoreDuringBuilds: true,
   },
   experimental: {
     reactRoot: true,
   },
-  staticPageGenerationTimeout: 180,
-  // Disable static optimization for all pages
-  exportPathMap: async function () {
-    return {}
-  },
+  // Remove static page generation timeout - we're not using static generation
+  // All pages use getServerSideProps for server-side rendering only
 }
 
 module.exports = nextConfig
