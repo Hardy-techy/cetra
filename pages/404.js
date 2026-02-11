@@ -16,8 +16,3 @@ export default function Custom404() {
         </div>
     );
 }
-
-// Force server-side rendering
-export async function getServerSideProps() {
-    return { props: {} };
-}
