@@ -8,6 +8,7 @@ const nextConfig = {
   experimental: {
     reactRoot: true,
   },
+  staticPageGenerationTimeout: 180,
 }
 
 module.exports = nextConfig
