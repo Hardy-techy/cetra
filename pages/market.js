@@ -286,3 +286,8 @@ export default function Market() {
         </div>
     );
 }
+
+// Force server-side rendering to prevent build timeout
+export async function getServerSideProps() {
+  return { props: {} };
+}
