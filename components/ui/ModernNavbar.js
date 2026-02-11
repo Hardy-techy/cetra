@@ -44,8 +44,8 @@ export default function ModernNavbar() {
                     {/* Wallet Connection */}
                     <div className="flex items-center">
                         <div className="push-wallet-button">
-                            <style jsx global>{`
-                                .push-wallet-button button {
+                            <style jsx>{`
+                                .push-wallet-button :global(button) {
                                     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
                                     border: 1px solid rgba(59, 130, 246, 0.3) !important;
                                     border-radius: 10px !important;
@@ -59,12 +59,12 @@ export default function ModernNavbar() {
                                     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif !important;
                                     letter-spacing: -0.01em !important;
                                 }
-                                .push-wallet-button button:hover {
+                                .push-wallet-button :global(button:hover) {
                                     transform: translateY(-1px) !important;
                                     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
                                     border-color: rgba(59, 130, 246, 0.5) !important;
                                 }
-                                .push-wallet-button button:active {
+                                .push-wallet-button :global(button:active) {
                                     transform: translateY(0) !important;
                                 }
                             `}</style>
