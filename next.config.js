@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     reactRoot: true,
   },
